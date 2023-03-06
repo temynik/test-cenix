@@ -5,7 +5,7 @@
 			:headers="headers"
 			:items="itemsTable"
 			sort-by="name"
-			class="elevation-1 mt-5"
+			class="mt-5"
 			no-data-text="Таблица пуста"
 			no-results-text="По вашему критерию ничего не найдено"
 			:page.sync="page"
@@ -106,107 +106,133 @@
 </template>
 
 <script>
-	import {mapState} from 'vuex'
-	export default {
-		name: 'tableComponents',
-		props: {
-			labelText: {
-				type: String,
-				default: ''
-			}
-		},
-		data: () => ({
-			name: '',
-			dialog: false,
-			dialogDelete: false,
-			editedIndex: -1,
-			editedItem: {
-				name: '',
-				id: ''
-			},
-			defaultItem: {
-				name: '',
-				id: ''
-			},
-			page: 1,
-			itemsPerPage: 10,
-			perPageChoices: [
-				{ text:'10', value: 10 },
-				{ text:'50', value: 50 },
-				{ text:'100', value: 100 }
-			]
-		}),
-		computed: {
-			...mapState(['itemsTable']),
-			formTitle () {
-				return this.editedIndex === -1 ? 'Создать пост' : 'Редактировать пост'
-			},
-			headers() {
-				return [
-					{ text: 'ID', value: 'id' },
-					{ text: 'Наименование', sortable: true, value: 'name', filter: f => { return ( f + '' ).toLowerCase().includes( this[ 'name' ].toLowerCase() )} },
-					{ text: 'Действия', value: 'actions', sortable: false },
-				]
-			},
-			totalRecords() {
-				return this.itemsTable.length
-			},
-			pageCount() {
-				return this.totalRecords / this.itemsPerPage
-			}
-		},
-		watch: {
-			dialog(val) {
-				val || this.close()
-			},
-			dialogDelete(val) {
-				val || this.closeDelete()
-			},
-		},
-		methods: {
-			editItem(item) {
-				this.editedIndex = this.itemsTable.indexOf(item)
-				this.editedItem = Object.assign({}, item)
-				this.dialog = true
-			},
-			deleteItem(item) {
-				this.editedIndex = this.itemsTable.indexOf(item)
-				this.editedItem = Object.assign({}, item)
-				this.dialogDelete = true
-			},
-			deleteItemConfirm() {
-				this.itemsTable.splice(this.editedIndex, 1)
-				this.closeDelete()
-			},
-			close() {
-				this.dialog = false
-				this.$nextTick(() => {
-					this.editedItem = Object.assign({}, this.defaultItem)
-					this.editedIndex = -1
-				})
-			},
-			closeDelete() {
-				this.dialogDelete = false
-				this.$nextTick(() => {
-					this.editedItem = Object.assign({}, this.defaultItem)
-					this.editedIndex = -1
-				})
-			},
-			save() {
-				if (this.editedIndex > -1) {
-					Object.assign(this.itemsTable[this.editedIndex], this.editedItem)
-				} else {
-					this.itemsTable.push(this.editedItem)
-				}
-				this.close()
-			},
+import {mapState} from 'vuex'
+export default {
+	name: 'tableComponents',
+	props: {
+		labelText: {
+			type: String,
+			default: ''
 		}
+	},
+	data: () => ({
+		name: '',
+		dialog: false,
+		dialogDelete: false,
+		editedIndex: -1,
+		editedItem: {
+			name: '',
+			id: ''
+		},
+		defaultItem: {
+			name: '',
+			id: ''
+		},
+		page: 1,
+		itemsPerPage: 10,
+		perPageChoices: [
+			{ text:'10', value: 10 },
+			{ text:'50', value: 50 },
+			{ text:'100', value: 100 }
+		]
+	}),
+	computed: {
+		...mapState(['itemsTable']),
+		formTitle () {
+			return this.editedIndex === -1 ? 'Создать пост' : 'Редактировать пост'
+		},
+		headers() {
+			return [
+				{ text: 'ID', value: 'id' },
+				{ text: 'Наименование', sortable: true, value: 'name', filter: f => { return ( f + '' ).toLowerCase().includes( this[ 'name' ].toLowerCase() )} },
+				{ text: 'Действия', value: 'actions', sortable: false },
+			]
+		},
+		totalRecords() {
+			return this.itemsTable.length
+		},
+		pageCount() {
+			return this.totalRecords / this.itemsPerPage
+		}
+	},
+	watch: {
+		dialog(val) {
+			val || this.close()
+		},
+		dialogDelete(val) {
+			val || this.closeDelete()
+		},
+	},
+	methods: {
+		editItem(item) {
+			this.editedIndex = this.itemsTable.indexOf(item)
+			this.editedItem = Object.assign({}, item)
+			this.dialog = true
+		},
+		deleteItem(item) {
+			this.editedIndex = this.itemsTable.indexOf(item)
+			this.editedItem = Object.assign({}, item)
+			this.dialogDelete = true
+		},
+		deleteItemConfirm() {
+			this.itemsTable.splice(this.editedIndex, 1)
+			this.closeDelete()
+		},
+		close() {
+			this.dialog = false
+			this.$nextTick(() => {
+				this.editedItem = Object.assign({}, this.defaultItem)
+				this.editedIndex = -1
+			})
+		},
+		closeDelete() {
+			this.dialogDelete = false
+			this.$nextTick(() => {
+				this.editedItem = Object.assign({}, this.defaultItem)
+				this.editedIndex = -1
+			})
+		},
+		save() {
+			if (this.editedIndex > -1) {
+				Object.assign(this.itemsTable[this.editedIndex], this.editedItem)
+			} else {
+				this.itemsTable.push(this.editedItem)
+			}
+			this.close()
+		},
 	}
+}
 </script>
 
 <style lang="scss">
-	.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) { 	
-		transition: 0.3s;
-		background: #8bc3fa;
+.theme--light.v-data-table > .v-data-table__wrapper > table > tbody > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper) { 	
+	transition: 0.3s;
+	background: #8bc3fa;
+}
+.v-data-table__wrapper {
+	max-height: 70vh;
+	overflow: auto;
+	margin: 0 20px;
+}
+.theme--light.v-data-table > .v-data-table__wrapper > table > thead > tr:last-child > th {
+	background-color: #f0f8ff;
+}
+.v-main__wrap {
+	margin-left: auto;
+	width: 100%;
+	height: 100%;
+	::-webkit-scrollbar-track {
+		background: #f0f8ff;
+		border-radius: 21px;
 	}
+	::-webkit-scrollbar-thumb {
+		border-radius: 21px;
+		background: #9EC8F9 no-repeat center;
+		height: 6px;
+	}
+	::-webkit-scrollbar {
+		height: 6px;
+		width: 8px;
+	}
+}
 </style>
